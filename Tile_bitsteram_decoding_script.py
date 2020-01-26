@@ -3,7 +3,7 @@
 """
 Tile bitstream decoding 스크립트
 
-@Author: 류일웅
+@Author: iwryu
 @Since: 20.01.21
 """
 import sys
@@ -13,6 +13,7 @@ import subprocess
 bitstream_file_name = ('v0_4096_2048_420_10b_22_0-32_tile4.265', 'v0_4096_2048_420_10b_22_0-32_tile11.265',
 'v0_4096_2048_420_10b_22_0-32_tile12.265', 'v0_4096_2048_420_10b_22_0-32_tile13.265', 'v0_4096_2048_420_10b_22_0-32_tile19.265',
 'v0_4096_2048_420_10b_22_0-32_tile20.265', 'v0_4096_2048_420_10b_22_0-32_tile21.265', 'v0_4096_2048_420_10b_22_0-32_tile28.265')
+tile_index = ('04', '11', '12', '13', '19', '20', '21', '28')
 TAppDecoder_path = ""
 bitstream_path = ""
 output_path = ""
@@ -21,7 +22,7 @@ output_path = ""
 ==============================
 초기화면 메세지 표시
 
-@Author: 류일웅
+@Author: iwryu
 @Since: 20.01.21
 @param: 
 @return: 
@@ -32,6 +33,7 @@ def init_show_message():
     이 스크립트는 타일비트스트림 decoding을 편리하게 하기 위한 스크립트입니다.
     스크립트를 실행하기 전에 HM-16.20이 build 되어있는지 확인하시길 바랍니다.
     또한, 폴더명에 공백과 같은 특수문자가 있는지 확인하시길 바랍니다.
+    모든 경로는 절대경로로 입력 해 주세요.
     """
 
     print(init_script_message)
@@ -40,7 +42,7 @@ def init_show_message():
 ==============================
 decoding을 하기 위한 경로 환경설정
 
-@Author: 류일웅
+@Author: iwryu
 @Since: 20.01.21
 @param: 
 @return: 
@@ -61,7 +63,7 @@ def set_decode_environment():
 ==============================
 사용자가 입력한 경로가 유효한지 검사
 
-@Author: 류일웅
+@Author: iwryu
 @Since: 20.01.21
 @param: decoder, bitstream, output
 @return: 
@@ -78,7 +80,7 @@ def check_path_space(decoder, bitstream, output):
 ==============================
 사용자가 입력한 경로에 TAppDecoder.exe가 있는지 확인
 
-@Author: 류일웅
+@Author: iwryu
 @Since: 20.01.21
 @param: decoder
 @return: 
@@ -97,7 +99,7 @@ def check_existing_decoder(decoder):
 ==============================
 bitstream 파일이 존재하는지 검사
 
-@Author: 류일웅
+@Author: iwryu
 @Since: 20.01.21
 @param: bitstream
 @return: 
@@ -116,7 +118,7 @@ def check_existing_bitstream_file(bitstream):
 ==============================
 decoding 수행
 
-@Author: 류일웅
+@Author: iwryu
 @Since: 20.01.21
 @param: decoder, bitstream, output
 @return: 
@@ -142,14 +144,14 @@ def execute_decoding(decoder, bitstream, output):
 ==============================
 decoding 과정을 자식 자식프로세스로 생성
 
-@Author: 류일웅
+@Author: iwryu
 @Since: 20.01.21
-@param: bitstream, output, file_name, file_index
+@param: bitstream, output, file_name, index
 @return: 
 ==============================
 """
-def run_TAppDecoder(bitstream, output, file_name, file_index):
-    subprocess_args = "TAppDecoder.exe -b " + bitstream + "\\" + file_name + " -o " + output + r"\test_output_" + str(file_index) + ".yuv"
+def run_TAppDecoder(bitstream, output, file_name, index):
+    subprocess_args = "TAppDecoder.exe -b " + bitstream + "\\" + file_name + " -o " + output + r"\v0_4096_2048_420_10b_22_0-32_tile" + str(tile_index[index]) + ".yuv"
     proc = subprocess.Popen(subprocess_args, shell=True)
     return proc
 

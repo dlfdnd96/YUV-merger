@@ -9,7 +9,7 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${fileDirname}\\${fileBasenameNoExtension}.exe",
-            "args": [],
+            "args": ["YUV-configure-and-tile-bitstreams\\v0_4096_2048_420_10b_22_0-31_merged_cfg.cfg", "Decoding-output\\test_yuv_merge.yuv"],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],
