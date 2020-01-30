@@ -308,6 +308,7 @@ void write_yuv_merge_file(FILE *output_YUV_file, const char *argv, unsigned shor
     fclose(output_YUV_file);
 }
 
+// TODO: 시간 측정하기
 int main(int argc, char *argv[])
 {
     check_argc(argc);
