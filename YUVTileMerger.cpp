@@ -351,6 +351,7 @@ int main(int argc, char *argv[])
         U_data = split_yuv(y_size, uv_size, U_data, decoding_read_data, true);
         V_data = split_yuv(y_size, uv_size, V_data, decoding_read_data, false);
 
+        // TODO: 코드 정리하기
         unsigned int output_height_index = config_parser.GetInt(ConfigFileType::TILE_HEIGHT) * (tile_index[i] / 8);
         if (!output_height_index)
         {
