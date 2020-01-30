@@ -1,3 +1,9 @@
+/*
+Config 파일 상수화 클래스
+
+@Author: iwryu
+@Since: 20.01.29
+*/
 #include <string>
 
 class ConfigFileType
