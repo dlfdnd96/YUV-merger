@@ -10,6 +10,7 @@
 #include <string>
 #include <fstream>
 #include <stdexcept>
+#include <time.h>
 
 #include "ConfigParser.h"
 #include "ConfigFileType.h"
@@ -32,8 +33,11 @@ CConfigParser::CConfigParser(std::string path)
 		while (getline(openFile, line))
         {
 			std::string delimiter = " ";
-			std::string token1 = line.substr(0, line.find(delimiter)); // token is "scott"
-			std::string token2 = line.substr(line.find(delimiter) + delimiter.length(), line.length()); // token is "scott"
+            // token is "scott"
+			std::string token1 = line.substr(0, line.find(delimiter));
+            // token is "scott"
+			std::string token2 = line.substr(
+                line.find(delimiter) + delimiter.length(), line.length());
 			m_table[token1] = token2;
 		}
 
@@ -177,9 +181,16 @@ YUV 파일을 읽어 배열에 복사
 @Author: iwryu
 @Since: 20.01.28
 @Param: input_YUV_file, config_parser, tile_index, decoding_file_read_size, decoding_read_data
-@Return: decoding_read_data
+@Return: 
 */
-unsigned short* copy_yuv_data(FILE *input_YUV_file, CConfigParser config_parser, const unsigned int tile_index, const unsigned int decoding_file_read_size, unsigned short* decoding_read_data)
+void copy_yuv_data
+(
+    FILE *input_YUV_file, 
+    CConfigParser config_parser, 
+    const unsigned int tile_index, 
+    const unsigned int decoding_file_read_size, 
+    unsigned short* decoding_read_data
+)
 {
     std::string string_tile_index = std::to_string(tile_index);
 
@@ -194,8 +205,6 @@ unsigned short* copy_yuv_data(FILE *input_YUV_file, CConfigParser config_parser,
     fread(decoding_read_data, sizeof(unsigned short), decoding_file_read_size, input_YUV_file);
 
     fclose(input_YUV_file);
-
-    return decoding_read_data;
 }
 
 /*
@@ -204,9 +213,15 @@ Y, U, V 값 분리
 @Author: iwryu
 @Since: 20.01.28
 @Param: y_size, uv_size, YUV_data, decoding_read_data, u_data
-@Return: YUV_data
+@Return: 
 */
-unsigned short* split_yuv(const unsigned int y_size, const unsigned int uv_size, unsigned short *YUV_data, unsigned short *decoding_read_data, bool u_data)
+void split_yuv
+(
+    const unsigned int y_size, 
+    const unsigned int uv_size, 
+    unsigned short *YUV_data, 
+    unsigned short *decoding_read_data, bool u_data
+)
 {
     if (!uv_size)
     {
@@ -233,8 +248,6 @@ unsigned short* split_yuv(const unsigned int y_size, const unsigned int uv_size,
         }
         
     }
-
-    return YUV_data;
 }
 
 /*
@@ -243,16 +256,18 @@ unsigned short* split_yuv(const unsigned int y_size, const unsigned int uv_size,
 @Author: iwryu
 @Since: 20.01.28
 @Param: output_total_write_size, output_total_data
-@Return: output_total_data
+@Return: 
 */
-unsigned short* init_yuv_merge(const unsigned int output_total_write_size, unsigned short *output_total_data)
+void init_yuv_merge
+(
+    const unsigned int output_total_write_size, 
+    unsigned short *output_total_data
+)
 {
     for (int i = 0; i < output_total_write_size; i++)
     {
         output_total_data[i] = 0;
     }
-
-    return output_total_data;
 }
 
 /*
@@ -261,9 +276,15 @@ YUV Merge
 @Author: iwryu
 @Since: 20.01.28
 @Param: out_yuv, YUV_data, y_data, config_parser
-@Return: out_yuv
+@Return: 
 */
-unsigned short* execute_yuv_merge(unsigned short *out_yuv, unsigned short *YUV_data, bool y_data, CConfigParser config_parser)
+void execute_yuv_merge
+(
+    unsigned short *out_yuv, 
+    unsigned short *YUV_data, 
+    bool y_data, 
+    CConfigParser config_parser
+)
 {
     if (y_data)
     {
@@ -271,7 +292,8 @@ unsigned short* execute_yuv_merge(unsigned short *out_yuv, unsigned short *YUV_d
         {
             for (int j = 0; j < config_parser.GetInt(ConfigFileType::TILE_WIDTH); j++)
             {
-                out_yuv[(config_parser.GetInt(ConfigFileType::PIC_WIDTH) * i) + j] = YUV_data[(config_parser.GetInt(ConfigFileType::TILE_WIDTH) * i) + j];
+                out_yuv[(config_parser.GetInt(ConfigFileType::PIC_WIDTH) * i) + j] 
+                    = YUV_data[(config_parser.GetInt(ConfigFileType::TILE_WIDTH) * i) + j];
             }
         }
     }
@@ -281,12 +303,11 @@ unsigned short* execute_yuv_merge(unsigned short *out_yuv, unsigned short *YUV_d
         {
             for (int j = 0; j < config_parser.GetInt(ConfigFileType::TILE_WIDTH) / 2; j++)
             {
-                out_yuv[(config_parser.GetInt(ConfigFileType::PIC_WIDTH) * i / 2) + j] = YUV_data[(config_parser.GetInt(ConfigFileType::TILE_WIDTH) * i / 2) + j];
+                out_yuv[(config_parser.GetInt(ConfigFileType::PIC_WIDTH) * i / 2) + j] 
+                    = YUV_data[(config_parser.GetInt(ConfigFileType::TILE_WIDTH) * i / 2) + j];
             }
         }
     }
-    
-    return out_yuv;
 }
 
 /*
@@ -297,20 +318,30 @@ YUV Merge한 결과를 파일에 저장
 @Param: 
 @Return: 
 */
-void write_yuv_merge_file(FILE *output_YUV_file, const char *argv, unsigned short* output_total_data, const unsigned int output_total_write_size)
+void write_yuv_merge_file
+(
+    FILE *output_YUV_file, 
+    const char *argv, 
+    unsigned short* output_total_data, 
+    const unsigned int output_total_write_size
+)
 {
     output_YUV_file = fopen(argv, "wb");
 
     check_file_open_error(output_YUV_file);
 
-    fwrite(output_total_data, sizeof(unsigned short), output_total_write_size, output_YUV_file);
+    fwrite(output_total_data, sizeof(unsigned short), 
+        output_total_write_size, output_YUV_file);
 
     fclose(output_YUV_file);
 }
 
-// TODO: 시간 측정하기
 int main(int argc, char *argv[])
 {
+    clock_t start, end;
+    double time_result;
+    start = clock();
+    
     check_argc(argc);
 
     CConfigParser config_parser(argv[1]);
@@ -320,10 +351,12 @@ int main(int argc, char *argv[])
     unsigned int tile_index[8] = {4, 11, 12, 13, 19, 20, 21, 28};
 
     // 각 tile들의 yuv 크기
-    unsigned int y_size = config_parser.GetInt(ConfigFileType::TILE_WIDTH) * config_parser.GetInt(ConfigFileType::TILE_HEIGHT);
+    unsigned int y_size 
+        = config_parser.GetInt(ConfigFileType::TILE_WIDTH) * config_parser.GetInt(ConfigFileType::TILE_HEIGHT);
     unsigned int uv_size = y_size / 4;
     unsigned int decoding_file_read_size = (y_size + (y_size / 2));
-    unsigned short *decoding_read_data = new unsigned short[decoding_file_read_size];
+    unsigned short *decoding_read_data 
+        = new unsigned short[decoding_file_read_size];
 
     // Y, U, V의 배열 선언
     unsigned short *Y_data = new unsigned short[y_size];
@@ -331,55 +364,82 @@ int main(int argc, char *argv[])
     unsigned short *V_data = new unsigned short[uv_size];
 
     // yuv merger할(output) 파일의 yuv 크기
-    unsigned int output_y_size = config_parser.GetInt(ConfigFileType::PIC_WIDTH) * config_parser.GetInt(ConfigFileType::PIC_HEIGHT);
+    unsigned int output_y_size 
+        = config_parser.GetInt(ConfigFileType::PIC_WIDTH) * config_parser.GetInt(ConfigFileType::PIC_HEIGHT);
     unsigned int output_uv_size = output_y_size / 4;
     unsigned int output_total_write_size = (output_y_size + (output_y_size / 2));
-    unsigned short *output_total_data = new unsigned short[output_total_write_size];
+    unsigned short *output_total_data 
+        = new unsigned short[output_total_write_size];
 
     unsigned short *pointer_output_y = nullptr;
     unsigned short *pointer_output_u = nullptr;
     unsigned short *pointer_output_v = nullptr;
     
-    output_total_data = init_yuv_merge(output_total_write_size, output_total_data);
+    init_yuv_merge(output_total_write_size, output_total_data);
 
-    //for (int i = 0; i < config_parser.GetInt(ConfigFileType::TILES); i++)
     for (int i = 0; i < config_parser.GetInt(ConfigFileType::TILES); i++)
     {
         FILE *input_YUV_file = NULL;
-        decoding_read_data = copy_yuv_data(input_YUV_file, config_parser, tile_index[i], decoding_file_read_size, decoding_read_data);
+        copy_yuv_data(input_YUV_file, config_parser, 
+            tile_index[i], decoding_file_read_size, decoding_read_data);
 
-        Y_data = split_yuv(y_size, 0, Y_data, decoding_read_data, false);
-        U_data = split_yuv(y_size, uv_size, U_data, decoding_read_data, true);
-        V_data = split_yuv(y_size, uv_size, V_data, decoding_read_data, false);
+        split_yuv(y_size, 0, Y_data, decoding_read_data, false);
+        split_yuv(y_size, uv_size, U_data, decoding_read_data, true);
+        split_yuv(y_size, uv_size, V_data, decoding_read_data, false);
 
         // TODO: 코드 정리하기
-        unsigned int output_height_index = config_parser.GetInt(ConfigFileType::TILE_HEIGHT) * (tile_index[i] / 8);
+        unsigned int output_row 
+            = tile_index[i] / (config_parser.GetInt(ConfigFileType::PIC_WIDTH) / config_parser.GetInt(ConfigFileType::TILE_WIDTH));
+        unsigned int output_height_index 
+            = config_parser.GetInt(ConfigFileType::TILE_HEIGHT) * output_row;
+        unsigned int uv_tile_width 
+            = config_parser.GetInt(ConfigFileType::TILE_WIDTH) / 2;
+
         if (!output_height_index)
-        {
-            pointer_output_y = &output_total_data[tile_index[i] * config_parser.GetInt(ConfigFileType::TILE_WIDTH)];
-            pointer_output_u = &output_total_data[(tile_index[i] * (config_parser.GetInt(ConfigFileType::TILE_WIDTH) / 2)) + output_y_size];
-            pointer_output_v = &output_total_data[(tile_index[i] * (config_parser.GetInt(ConfigFileType::TILE_WIDTH) / 2)) + output_y_size + output_uv_size];
+        {   
+            pointer_output_y 
+                = &output_total_data[tile_index[i] * config_parser.GetInt(ConfigFileType::TILE_WIDTH)];
+            pointer_output_u 
+                = &output_total_data[(tile_index[i] * uv_tile_width) + output_y_size];
+            pointer_output_v 
+                = &output_total_data[(tile_index[i] * uv_tile_width) + output_y_size + output_uv_size];
         }
         else
         {
-            pointer_output_y = &output_total_data[(config_parser.GetInt(ConfigFileType::PIC_WIDTH) * output_height_index) + (tile_index[i] - ((tile_index[i] / 8) * 8)) * config_parser.GetInt(ConfigFileType::TILE_WIDTH)];
-            pointer_output_u = &output_total_data[((config_parser.GetInt(ConfigFileType::PIC_WIDTH) / 2) * (output_height_index / 2)) + (tile_index[i] - ((tile_index[i] / 8) * 8)) * (config_parser.GetInt(ConfigFileType::TILE_WIDTH) / 2) + output_y_size];
-            pointer_output_v = &output_total_data[((config_parser.GetInt(ConfigFileType::PIC_WIDTH) / 2) * (output_height_index / 2)) + (tile_index[i] - ((tile_index[i] / 8) * 8)) * (config_parser.GetInt(ConfigFileType::TILE_WIDTH) / 2) + output_y_size + output_uv_size];
+            unsigned int output_uv_width 
+                = config_parser.GetInt(ConfigFileType::PIC_WIDTH) / 2;
+            unsigned int output_uv_height_position 
+                = output_height_index / 2;
+            // 이게 정말 필요할까?
+            unsigned int output_row_start_position
+                = tile_index[i] - (output_row * 8);
+            
+            pointer_output_y 
+                = &output_total_data[(output_row_start_position * config_parser.GetInt(ConfigFileType::TILE_WIDTH)) + (config_parser.GetInt(ConfigFileType::PIC_WIDTH) * output_height_index)];
+            pointer_output_u 
+                = &output_total_data[output_row_start_position * uv_tile_width + (output_uv_width * output_uv_height_position) + output_y_size];
+            pointer_output_v 
+                = &output_total_data[output_row_start_position * uv_tile_width + (output_uv_width * output_uv_height_position) + output_y_size + output_uv_size];
         }
 
-        pointer_output_y = execute_yuv_merge(pointer_output_y, Y_data, true, config_parser);
-        pointer_output_u = execute_yuv_merge(pointer_output_u, U_data, false, config_parser);
-        pointer_output_v = execute_yuv_merge(pointer_output_v, V_data, false, config_parser);
-
-        FILE *output_YUV_file = NULL;
-        write_yuv_merge_file(output_YUV_file, argv[2], output_total_data, output_total_write_size);
+        execute_yuv_merge(pointer_output_y, Y_data, true, config_parser);
+        execute_yuv_merge(pointer_output_u, U_data, false, config_parser);
+        execute_yuv_merge(pointer_output_v, V_data, false, config_parser);
     }
+
+    FILE *output_YUV_file = NULL;
+    write_yuv_merge_file(output_YUV_file, argv[2], 
+        output_total_data, output_total_write_size);
 
     delete[] output_total_data;
     delete[] V_data;
     delete[] U_data;
     delete[] Y_data;
     delete[] decoding_read_data;
+
+    end = clock();
+    time_result = (double)(end - start) / 1000;
+    printf("Working time: %.2f seconds\n", time_result);
 
     return 0;
 }
