@@ -12,3 +12,4 @@
 4. visual studio 2015
 5. HM-16.20 빌드
 6. YUV player
+7. CMake 설치 여부 확인
