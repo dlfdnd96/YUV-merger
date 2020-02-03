@@ -9,6 +9,7 @@ Tile bitstream decoding 스크립트
 import sys
 import os
 import subprocess
+import platform
 
 bitstream_file_name = ('v0_4096_2048_420_10b_22_0-32_tile4.265', 'v0_4096_2048_420_10b_22_0-32_tile11.265',
 'v0_4096_2048_420_10b_22_0-32_tile12.265', 'v0_4096_2048_420_10b_22_0-32_tile13.265', 'v0_4096_2048_420_10b_22_0-32_tile19.265',
@@ -78,7 +79,7 @@ def check_path_space(decoder, bitstream, output):
 
 """
 ==============================
-사용자가 입력한 경로에 TAppDecoder.exe가 있는지 확인
+사용자가 입력한 경로에 디코더가 있는지 확인
 
 @Author: iwryu
 @Since: 20.01.21
@@ -87,8 +88,12 @@ def check_path_space(decoder, bitstream, output):
 ==============================
 """
 def check_existing_decoder(decoder):
-    decoder_file_name = 'TAppDecoder.exe'
-    error_message = "TappDecoder.exe를 찾을 수 없습니다. 파일의 누락 혹은 경로가 맞는지 확인하세요."
+    if platform.system() is 'Windows':
+        decoder_file_name = 'TAppDecoder.exe'
+    else:
+        decoder_file_name = 'TAppDecoderStatic'
+    
+    error_message = decoder_file_name + "를 찾을 수 없습니다. 파일의 누락 혹은 경로가 맞는지 확인하세요."
 
     os.chdir(decoder)
     if os.path.isfile(decoder_file_name) is False:
@@ -151,7 +156,11 @@ decoding 과정을 자식 자식프로세스로 생성
 ==============================
 """
 def run_TAppDecoder(bitstream, output, file_name, index):
-    subprocess_args = "TAppDecoder.exe -b " + bitstream + "\\" + file_name + " -o " + output + r"\v0_4096_2048_420_10b_22_0-32_tile" + str(tile_index[index]) + ".yuv"
+    if platform.system() is 'Windows':
+        subprocess_args = "TAppDecoder.exe -b " + bitstream + "\\" + file_name + " -o " + output + r"\v0_4096_2048_420_10b_22_0-32_tile" + str(tile_index[index]) + ".yuv"
+    else:
+        subprocess_args = "TAppDecoderStatic -b " + bitstream +  "/" + file_name + " -o " + output + "/v0_4096_2048_420_10b_22_0-32_tile" + str(tile_index[index]) + ".yuv"
+    
     proc = subprocess.Popen(subprocess_args, shell=True)
     return proc
 
