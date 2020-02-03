@@ -387,40 +387,31 @@ int main(int argc, char *argv[])
         split_yuv(y_size, uv_size, U_data, decoding_read_data, true);
         split_yuv(y_size, uv_size, V_data, decoding_read_data, false);
 
-        // TODO: 코드 정리하기
-        unsigned int output_row 
+        // 4x8 가로에서 몇 번째 가로인지를 표시
+        unsigned int output_row_number 
             = tile_index[i] / (config_parser.GetInt(ConfigFileType::PIC_WIDTH) / config_parser.GetInt(ConfigFileType::TILE_WIDTH));
-        unsigned int output_height_index 
-            = config_parser.GetInt(ConfigFileType::TILE_HEIGHT) * output_row;
+        // 타일의 y위치 값
+        unsigned int tile_y_index 
+            = config_parser.GetInt(ConfigFileType::TILE_HEIGHT) * output_row_number;
+        // 타일의 uv 가로 크기
         unsigned int uv_tile_width 
             = config_parser.GetInt(ConfigFileType::TILE_WIDTH) / 2;
-
-        if (!output_height_index)
-        {   
-            pointer_output_y 
-                = &output_total_data[tile_index[i] * config_parser.GetInt(ConfigFileType::TILE_WIDTH)];
-            pointer_output_u 
-                = &output_total_data[(tile_index[i] * uv_tile_width) + output_y_size];
-            pointer_output_v 
-                = &output_total_data[(tile_index[i] * uv_tile_width) + output_y_size + output_uv_size];
-        }
-        else
-        {
-            unsigned int output_uv_width 
-                = config_parser.GetInt(ConfigFileType::PIC_WIDTH) / 2;
-            unsigned int output_uv_height_position 
-                = output_height_index / 2;
-            // 이게 정말 필요할까?
-            unsigned int output_row_start_position
-                = tile_index[i] - (output_row * 8);
-            
-            pointer_output_y 
-                = &output_total_data[(output_row_start_position * config_parser.GetInt(ConfigFileType::TILE_WIDTH)) + (config_parser.GetInt(ConfigFileType::PIC_WIDTH) * output_height_index)];
-            pointer_output_u 
-                = &output_total_data[output_row_start_position * uv_tile_width + (output_uv_width * output_uv_height_position) + output_y_size];
-            pointer_output_v 
-                = &output_total_data[output_row_start_position * uv_tile_width + (output_uv_width * output_uv_height_position) + output_y_size + output_uv_size];
-        }
+        // output의 uv 가로 크기
+        unsigned int output_uv_width 
+            = config_parser.GetInt(ConfigFileType::PIC_WIDTH) / 2;
+        // output의 uv 높이위치 값
+        unsigned int output_uv_height_index 
+            = tile_y_index / 2;
+        // 타일이 merger되는 위치
+        unsigned int output_row_start_index
+            = tile_index[i] - (output_row_number * 8);
+        
+        pointer_output_y 
+            = &output_total_data[(output_row_start_index * config_parser.GetInt(ConfigFileType::TILE_WIDTH)) + (config_parser.GetInt(ConfigFileType::PIC_WIDTH) * tile_y_index)];
+        pointer_output_u 
+            = &output_total_data[output_row_start_index * uv_tile_width + (output_uv_width * output_uv_height_index) + output_y_size];
+        pointer_output_v 
+            = &output_total_data[output_row_start_index * uv_tile_width + (output_uv_width * output_uv_height_index) + output_y_size + output_uv_size];
 
         execute_yuv_merge(pointer_output_y, Y_data, true, config_parser);
         execute_yuv_merge(pointer_output_u, U_data, false, config_parser);
