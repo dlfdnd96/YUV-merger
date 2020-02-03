@@ -159,7 +159,7 @@ def run_TAppDecoder(bitstream, output, file_name, index):
     if platform.system() is 'Windows':
         subprocess_args = "TAppDecoder.exe -b " + bitstream + "\\" + file_name + " -o " + output + r"\v0_4096_2048_420_10b_22_0-32_tile" + str(tile_index[index]) + ".yuv"
     else:
-        subprocess_args = "TAppDecoderStatic -b " + bitstream +  "/" + file_name + " -o " + output + "/v0_4096_2048_420_10b_22_0-32_tile" + str(tile_index[index]) + ".yuv"
+        subprocess_args = "./TAppDecoderStatic -b " + bitstream +  "/" + file_name + " -o " + output + "/v0_4096_2048_420_10b_22_0-32_tile" + str(tile_index[index]) + ".yuv"
     
     proc = subprocess.Popen(subprocess_args, shell=True)
     return proc
