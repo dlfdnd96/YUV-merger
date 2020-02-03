@@ -13,3 +13,10 @@
 5. HM-16.20 빌드
 6. YUV player
 7. CMake 설치 여부 확인
+8. 컴파일 설치 여부
+    * MinGw 컴파일(윈도우)
+    * gcc 컴파일(리눅스)
+***
+# 실행 방법
+* 윈도우일 경우 build_gcc_window.bat 실행
+* 리눅스일 경우 build_gcc_linux.sh 실행
