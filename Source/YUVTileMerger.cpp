@@ -429,8 +429,8 @@ int main(int argc, char *argv[])
     delete[] decoding_read_data;
 
     end = clock();
-    time_result = (double)(end - start) / 1000;
-    printf("Working time: %.2f seconds\n", time_result);
+    time_result = (double)(end - start);
+    printf("Working time: %.2f seconds\n", time_result / CLOCKS_PER_SEC);
 
     return 0;
 }
