@@ -36,5 +36,5 @@
 # 결과 확인 방법
 * yuv player로 yuv merger 결과 파일을 확인(윈도우)
 * ffmpeg 명령어 실행(리눅스)
-    * 예: ffmpeg -s 4096x2048 -pix_fmt yuv420pl10le - i ./Output/yuv_merger_output.yuv -vf trim=start_frame=0:end_frame=1 -f image2 ./Output/yuv_merger_output.png
+    * 예: ffmpeg -s 4096x2048 -pix_fmt yuv420p10le - i ./Output/yuv_merger_output.yuv -vf trim=start_frame=0:end_frame=1 -f image2 ./Output/yuv_merger_output.png
     * 출처: https://blog.naver.com/uof4949/221471764086
