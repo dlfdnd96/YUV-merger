@@ -18,12 +18,14 @@
     * gcc 컴파일(리눅스)
 
 # 실행 방법
-## 비트스트림 디코딩 방법
+1. 비트스트림 디코딩
 * Script/Tile_bitsteram_decoding_script.py 실행
-## build 방법
+
+2. build
 * 윈도우일 경우 build_gcc_window.bat 실행
 * 리눅스일 경우 build_gcc_linux.sh 실행
-## yuv merger 방법
+
+3. yuv merger
 * build/Debug/YUV-merger-0.1.out 실행(윈도우일 경우 build/Debug/YUV-merger-0.1.out.exe)
 
 # 주의사항
